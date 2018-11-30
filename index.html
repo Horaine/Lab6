@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> </title>
+        
+        <script src="https://code.jquery.com/jquery-3.3.1.js">
+            
+           
+        </script>
+        
+        <script type="text/javascript">
+            window.onload = function(){
+            //Listen for button click
+            var searchButton = document.getElementById("searchButton");
+            console.log(searchButton)
+            searchButton.onclick = function(){
+                console.log("clicked button")
+                
+                //Search for any word
+                var searchValue = document.getElementById("searchValue");
+                
+                //AJAX request to fetch data; returns the result of request.php
+                var defRequest = new XMLHttpRequest();
+                var url = "request.php?q="+ searchValue.value;
+                defRequest.onreadystatechange = function(){
+                    if (defRequest.readyState === XMLHttpRequest.DONE){
+                        if (defRequest.status === 200){
+                            var response = defRequest.responseText;
+                            var definition = document.querySelector("#defin");
+                            definition.innerHTML = response;
+                         //   alert(response);
+                        }else{
+                                if(defRequest.status !== 200){
+                                    alert(defRequest.status + ': ' + defRequest.statusText);
+                                    } else {
+                                        alert(defRequest.responseText);
+                                
+                            }
+                
+                       } 
+                            
+                    }
+                } ;
+                defRequest.open('GET', url);
+                defRequest.send();
+               
+            };
+        
+          
+            
+          var allDefs = document.getElementById("allDefs");
+          console.log(allDefs)
+            allDefs.onclick = function(){
+                console.log("clicked button")
+            
+          var allDefRequest = new XMLHttpRequest();
+                var url = "request.php?q=&all=true";
+                allDefRequest.onreadystatechange = function(){
+                    if (allDefRequest.readyState === XMLHttpRequest.DONE){
+                        if (allDefRequest.status === 200){
+                            var response = allDefRequest.responseXML;
+                            var results = document.querySelector("#defin");
+                            // console.log(response);
+                            var definitions = response.getElementsByTagName('definition');
+                            
+                            var list =document.createElement('ol');
+                            results.appendChild(list);
+                            for (var def = 0; def < definitions.length; def++){
+                                var definition = document.createElement('li');
+                                let heading = document.createElement('h3');
+                                let defName = document.createTextNode(definitions[def].getAttribute('name'));
+                                heading.appendChild(defName);
+                                // console.log(definitions[def].childNodes[0]);
+                                var text = document.createTextNode(definitions[def].childNodes[0].nodeValue);
+                                
+                                let p1 = document.createElement('p');
+                                p1.appendChild(text);
+                                definition.appendChild(heading);
+                                definition.appendChild(p1);
+                                let authorPara = document.createElement('p');
+                                let author = document.createTextNode(definitions[def].getAttribute('author'));
+                                let dash = document.createTextNode("- ");
+                                authorPara.appendChild(dash);
+                                authorPara.appendChild(author);
+                                definition.appendChild(authorPara);
+                                list.appendChild(definition);
+                            }
+                            
+                        }else{
+                                if(allDefRequest.status !== 200){
+                                    alert(allDefRequest.status + ': ' + allDefRequest.statusText);
+                                    } else {
+                                        alert(allDefRequest.responseXML);
+                                
+                            }
+                
+                      } 
+                            
+                    }
+                } ;
+                allDefRequest.open('GET', url);
+                allDefRequest.send();
+            };
+        };
+        
+        
+        </script>
+    </head>
+    <body>
+        <fieldset>
+            <input type = "textBox" id = "searchValue"> <br />
+            <button id = "searchButton">Search</button>
+            <button id = "allDefs">Get All Definitons</button>
+        </fieldset>
+        
+        <div id ="defin"> </div>
+        
+    </body>
+</html>
